@@ -33,6 +33,16 @@ const userSchema = new Schema({
     default: null
   },
 
+  emailVerificationOtp: {
+    type: String,
+    default: null
+  },
+
+  emailVerificationOtpExpires: {
+    type: Date,
+    default: null
+  },
+
   plan: {
     type: String,
     enum: ["free", "pro"],

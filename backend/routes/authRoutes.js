@@ -9,6 +9,7 @@ import User from "../models/User.js";
 import { sendVerificationEmail } from "../utils/sendEmail.js";
 
 const VERIFICATION_EXPIRY_HOURS = 24;
+const EMAIL_SEND_TIMEOUT_MS = 8000;
 
 function getClientUrl() {
   return process.env.CLIENT_URL || "http://localhost:5173";
@@ -22,21 +23,52 @@ function createVerificationToken() {
   return { token, hashedToken, expires };
 }
 
+function createVerificationOtp() {
+  const otp = String(crypto.randomInt(100000, 1000000));
+  const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
+  const expires = new Date(Date.now() + VERIFICATION_EXPIRY_HOURS * 60 * 60 * 1000);
+
+  return { otp, hashedOtp, expires };
+}
+
+function withTimeout(promise, timeoutMs, timeoutMessage) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      setTimeout(() => reject(new Error(timeoutMessage)), timeoutMs);
+    }),
+  ]);
+}
+
 async function sendUserVerification(user) {
   const { token, hashedToken, expires } = createVerificationToken();
+  const { otp, hashedOtp, expires: otpExpires } = createVerificationOtp();
 
   user.emailVerificationToken = hashedToken;
   user.emailVerificationExpires = expires;
+  user.emailVerificationOtp = hashedOtp;
+  user.emailVerificationOtpExpires = otpExpires;
   await user.save();
 
   const verificationUrl = `${getClientUrl()}/verify-email/${token}`;
-  const emailResult = await sendVerificationEmail({
-    to: user.email,
-    name: user.name,
-    verificationUrl,
-  });
+  let emailResult;
 
-  return { verificationUrl, emailResult };
+  try {
+    emailResult = await withTimeout(
+      sendVerificationEmail({
+        to: user.email,
+        name: user.name,
+        verificationUrl,
+        otp,
+      }),
+      EMAIL_SEND_TIMEOUT_MS,
+      "EMAIL_SEND_TIMEOUT"
+    );
+  } catch (error) {
+    emailResult = { sent: false, reason: error.message || "EMAIL_SEND_FAILED" };
+  }
+
+  return { verificationUrl, otp, emailResult };
 }
 
 router.post("/signup", async (req, res) => {
@@ -72,14 +104,15 @@ router.post("/signup", async (req, res) => {
 
     });
 
-    const { verificationUrl, emailResult } = await sendUserVerification(user);
+    const { verificationUrl, otp, emailResult } = await sendUserVerification(user);
 
     res.json({
       message: emailResult.sent
-        ? "Account created. Please verify your email."
-        : "Account created. SMTP is not configured, use the verification link.",
+        ? "Account created. Please verify your email with the OTP."
+        : "Account created. SMTP is not configured, use the OTP or verification link.",
       verificationRequired: true,
       verificationUrl: emailResult.sent ? undefined : verificationUrl,
+      verificationOtp: emailResult.sent ? undefined : otp,
       user: {
         id: user._id,
         name: user.name,
@@ -121,6 +154,56 @@ router.get("/verify-email/:token", async (req, res) => {
     user.isEmailVerified = true;
     user.emailVerificationToken = null;
     user.emailVerificationExpires = null;
+    user.emailVerificationOtp = null;
+    user.emailVerificationOtpExpires = null;
+    await user.save();
+
+    res.json({
+      message: "Email verified successfully. You can sign in now."
+    });
+
+  } catch (error) {
+
+    res.status(500).json({
+      message: error.message
+    });
+
+  }
+
+});
+
+router.post("/verify-otp", async (req, res) => {
+
+  try {
+
+    const email = String(req.body.email || "").trim().toLowerCase();
+    const otp = String(req.body.otp || "").trim();
+
+    if (!email || !/^\d{6}$/.test(otp)) {
+      return res.status(400).json({
+        message: "Valid email aur 6 digit OTP required hai"
+      });
+    }
+
+    const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
+
+    const user = await User.findOne({
+      email,
+      emailVerificationOtp: hashedOtp,
+      emailVerificationOtpExpires: { $gt: new Date() }
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        message: "OTP invalid ya expire ho gaya hai"
+      });
+    }
+
+    user.isEmailVerified = true;
+    user.emailVerificationToken = null;
+    user.emailVerificationExpires = null;
+    user.emailVerificationOtp = null;
+    user.emailVerificationOtpExpires = null;
     await user.save();
 
     res.json({
@@ -163,13 +246,14 @@ router.post("/resend-verification", async (req, res) => {
       });
     }
 
-    const { verificationUrl, emailResult } = await sendUserVerification(user);
+    const { verificationUrl, otp, emailResult } = await sendUserVerification(user);
 
     res.json({
       message: emailResult.sent
-        ? "Verification email sent."
-        : "SMTP is not configured, use the verification link.",
-      verificationUrl: emailResult.sent ? undefined : verificationUrl
+        ? "Verification OTP sent."
+        : "SMTP is not configured, use the OTP or verification link.",
+      verificationUrl: emailResult.sent ? undefined : verificationUrl,
+      verificationOtp: emailResult.sent ? undefined : otp
     });
 
   } catch (error) {
