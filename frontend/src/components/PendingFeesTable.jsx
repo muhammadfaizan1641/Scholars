@@ -165,7 +165,7 @@ export default function PendingFeesTable() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "http://localhost:5000/api/students/pending",
+        "https://scholars-bk1o.onrender.com/api/students/pending",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -217,8 +217,8 @@ export default function PendingFeesTable() {
     <>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');`}</style>
 
-      <div style={S.page}>
-        <div style={S.pageHeader}>
+      <div style={S.page} className="app-page pending-page">
+        <div style={S.pageHeader} className="page-header">
           <div>
             <h1 style={S.pageTitle}>Pending Fees</h1>
             <p style={S.pageSubtitle}>OUTSTANDING PAYMENTS</p>
@@ -242,8 +242,8 @@ export default function PendingFeesTable() {
           />
         </div>
 
-        <div style={S.tableWrap}>
-          <table style={S.table}>
+        <div style={S.tableWrap} className="responsive-table-wrap">
+          <table style={S.table} className="responsive-table pending-table">
             <thead>
               <tr>
                 <th style={S.th}>Student</th>

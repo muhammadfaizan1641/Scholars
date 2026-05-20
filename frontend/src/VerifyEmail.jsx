@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = "https://scholars-bk1o.onrender.com/api";
 
 const styles = {
   page: {
@@ -106,6 +106,22 @@ const styles = {
     boxSizing: "border-box",
     marginBottom: "12px",
   },
+  otpInput: {
+    width: "100%",
+    padding: "13px 14px",
+    border: "1px solid #e4e4e4",
+    borderRadius: "10px",
+    fontSize: "20px",
+    color: "#0f0f0f",
+    fontFamily: "'DM Mono', monospace",
+    outline: "none",
+    background: "#fafafa",
+    boxSizing: "border-box",
+    marginBottom: "12px",
+    textAlign: "center",
+    letterSpacing: "6px",
+    fontWeight: "700",
+  },
   button: {
     width: "100%",
     padding: "13px",
@@ -159,12 +175,13 @@ export default function VerifyEmail() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const initialEmail = searchParams.get("email") || "";
-  const initialLink = searchParams.get("verificationUrl") || "";
+  const didVerifyToken = useRef(false);
+  const isEmailLocked = Boolean(initialEmail);
 
   const [email, setEmail] = useState(initialEmail);
+  const [otp, setOtp] = useState("");
   const [status, setStatus] = useState(token ? "loading" : "idle");
   const [message, setMessage] = useState("");
-  const [devLink, setDevLink] = useState(initialLink);
 
   const pageCopy = useMemo(() => {
     if (token && status === "success") {
@@ -186,12 +203,14 @@ export default function VerifyEmail() {
     return {
       pill: "CHECK YOUR INBOX",
       heading: "Verify your email",
-      text: "We sent a verification link to your email. Open it to activate your Scholars account.",
+      text: "We sent a 6 digit OTP to your email. Enter it here to activate your Scholars account.",
     };
   }, [status, token]);
 
   useEffect(() => {
     if (!token) return;
+    if (didVerifyToken.current) return;
+    didVerifyToken.current = true;
 
     const verifyEmail = async () => {
       try {
@@ -213,7 +232,6 @@ export default function VerifyEmail() {
   const resendVerification = async () => {
     setStatus("loading");
     setMessage("");
-    setDevLink("");
 
     try {
       const res = await fetch(`${API_BASE}/auth/resend-verification`, {
@@ -225,11 +243,31 @@ export default function VerifyEmail() {
       if (!res.ok) throw new Error(data.message || "Could not resend verification email.");
 
       setStatus("info");
-      setMessage(data.message || "Verification email sent.");
-      if (data.verificationUrl) setDevLink(data.verificationUrl);
+      setMessage(data.message || "Verification OTP sent.");
     } catch (err) {
       setStatus("error");
       setMessage(err.message || "Could not resend verification email.");
+    }
+  };
+
+  const verifyOtp = async () => {
+    setStatus("loading");
+    setMessage("");
+
+    try {
+      const res = await fetch(`${API_BASE}/auth/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "OTP verification failed.");
+
+      setStatus("success");
+      setMessage(data.message || "Email verified successfully.");
+    } catch (err) {
+      setStatus("error");
+      setMessage(err.message || "OTP invalid ya expire ho gaya hai.");
     }
   };
 
@@ -241,8 +279,8 @@ export default function VerifyEmail() {
         input:focus { border-color: #0f0f0f !important; background: #fff !important; }
       `}</style>
 
-      <div style={styles.page}>
-        <div style={styles.card}>
+      <div style={styles.page} className="auth-page">
+        <div style={styles.card} className="auth-card verify-card">
           <div style={styles.logoRow}>
             <div style={styles.logoMark}>S</div>
             <div style={styles.logoTextWrap}>
@@ -261,19 +299,42 @@ export default function VerifyEmail() {
 
           {status === "loading" && <div style={messageStyle("info")}>Processing...</div>}
           {message && <div style={messageStyle(status === "success" ? "success" : status === "error" ? "error" : "info")}>{message}</div>}
-          {devLink && <div style={messageStyle("info")}>Dev verification link: {devLink}</div>}
 
           {!token && (
             <>
               <input
-                style={styles.input}
+                style={{
+                  ...styles.input,
+                  color: isEmailLocked ? "#777" : styles.input.color,
+                  cursor: isEmailLocked ? "not-allowed" : "text",
+                }}
                 type="email"
                 placeholder="you@example.com"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  if (!isEmailLocked) setEmail(e.target.value);
+                }}
+                readOnly={isEmailLocked}
+                aria-readonly={isEmailLocked}
               />
+              <input
+                style={styles.otpInput}
+                type="text"
+                inputMode="numeric"
+                maxLength={6}
+                placeholder="000000"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
+              />
+              <button
+                style={{ ...styles.button, marginBottom: "10px" }}
+                onClick={verifyOtp}
+                disabled={status === "loading" || otp.length !== 6}
+              >
+                {status === "loading" ? "Verifying..." : "Verify OTP"}
+              </button>
               <button style={styles.button} onClick={resendVerification} disabled={status === "loading"}>
-                {status === "loading" ? "Sending..." : "Resend Verification Email"}
+                {status === "loading" ? "Sending..." : "Resend OTP"}
               </button>
             </>
           )}

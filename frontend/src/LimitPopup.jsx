@@ -3,7 +3,7 @@ import { useToast } from "./components/ToastProvider";
 
 const RAZORPAY_KEY_ID = "rzp_test_SqOwNrPgKGEEo5";
 const PRO_PRICE_INR = 29900;
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = "https://scholars-bk1o.onrender.com/api";
 
 function loadRazorpayScript() {
   return new Promise((resolve) => {
@@ -193,6 +193,36 @@ const CSS = `
   .lp-dismiss-btn { padding: 12px; background: transparent; color: #6b7280; border: 1px solid #e5e7eb; font-size: 13px; font-weight: 500; }
   .lp-spinner { width: 15px; height: 15px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: lpSpin 0.7s linear infinite; }
   .lp-trust { text-align: center; font-size: 11px; color: #9ca3af; font-family: 'DM Mono', monospace; margin: 16px 0 0; }
+
+  @media (max-width: 520px) {
+    .lp-overlay {
+      align-items: flex-start;
+      padding: 14px;
+      overflow-y: auto;
+    }
+
+    .lp-card {
+      border-radius: 14px;
+      max-width: 100%;
+    }
+
+    .lp-body {
+      padding: 22px 16px;
+    }
+
+    .lp-header-row {
+      margin-bottom: 18px;
+    }
+
+    .lp-heading {
+      font-size: 24px;
+    }
+
+    .lp-price-card,
+    .lp-features {
+      grid-template-columns: 1fr;
+    }
+  }
 `;
 
 export default function LimitPopup({

@@ -1,0 +1,109 @@
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: #f9f9f9;
+  overflow-x: hidden;
+}
+
+button,
+input,
+select {
+  max-width: 100%;
+}
+
+.responsive-table-wrap {
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+.responsive-table {
+  min-width: 680px;
+}
+
+@media (max-width: 720px) {
+  .app-page {
+    padding: 22px 14px !important;
+  }
+
+  .auth-page {
+    align-items: flex-start !important;
+    padding: 18px 14px !important;
+  }
+
+  .auth-card {
+    padding: 26px 18px !important;
+    border-radius: 12px !important;
+  }
+
+  .verify-card {
+    max-width: 100% !important;
+  }
+
+  .page-header {
+    align-items: flex-start !important;
+  }
+
+  .filter-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .student-details-page {
+    max-width: none !important;
+  }
+
+  .profile-card {
+    padding: 20px 16px !important;
+    border-radius: 12px !important;
+  }
+
+  .profile-left {
+    align-items: flex-start !important;
+  }
+
+  .info-grid,
+  .edit-row,
+  .dialog-field-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .detail-actions {
+    flex-direction: column !important;
+  }
+
+  .detail-actions button,
+  .dialog-footer button {
+    width: 100%;
+    margin-left: 0 !important;
+  }
+
+  .detail-table-card {
+    border-radius: 12px !important;
+  }
+
+  .student-dialog {
+    max-height: calc(100vh - 24px);
+    border-radius: 12px !important;
+  }
+
+  .dialog-body {
+    max-height: calc(100vh - 190px) !important;
+    padding: 18px 16px !important;
+  }
+
+  .dialog-footer {
+    padding: 14px 16px 18px !important;
+    flex-direction: column-reverse !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .auth-card {
+    padding: 22px 16px !important;
+  }
+
+  .responsive-table {
+    min-width: 620px;
+  }
+}

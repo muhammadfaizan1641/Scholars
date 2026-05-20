@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+const API_BASE = "https://scholars-bk1o.onrender.com/api";
+
 const styles = {
   page: {
     fontFamily: "'DM Sans', sans-serif",
@@ -231,23 +233,32 @@ export default function Signup() {
     if (password.length < 6) return setError("Password must be at least 6 characters.");
 
     setLoading(true);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 25000);
+
     try {
-      const res = await fetch("http://localhost:5000/api/auth/signup", {
+      const res = await fetch(`${API_BASE}/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
+        signal: controller.signal,
       });
       const data = await res.json();
 
       if (!res.ok) return setError(data.message || "Signup failed.");
 
-      setSuccess("Account created! Please verify your email.");
+      setSuccess(data.message || "Account created! Please verify your email.");
       const params = new URLSearchParams({ email });
       if (data.verificationUrl) params.set("verificationUrl", data.verificationUrl);
-      setTimeout(() => navigate(`/verify-email?${params.toString()}`), 800);
-    } catch {
-      setError("Cannot connect to server. Is your backend running?");
+      navigate(`/verify-email?${params.toString()}`);
+    } catch (err) {
+      setError(
+        err.name === "AbortError"
+          ? "Signup request timed out. Please try again in a moment."
+          : "Cannot connect to server. Please try again."
+      );
     } finally {
+      clearTimeout(timeoutId);
       setLoading(false);
     }
   };
@@ -264,8 +275,8 @@ export default function Signup() {
         input:focus { border-color: #0f0f0f !important; background: #fff !important; }
       `}</style>
 
-      <div style={styles.page}>
-        <div style={styles.card}>
+      <div style={styles.page} className="auth-page">
+        <div style={styles.card} className="auth-card">
 
           {/* Logo */}
           <div style={styles.logoRow}>

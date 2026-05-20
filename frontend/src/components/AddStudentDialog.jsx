@@ -252,7 +252,7 @@ export default function AddStudentDialog({ open, handleClose, refreshDashboard }
         },
       };
 
-      const response = await fetch("http://localhost:5000/api/students/add", {
+      const response = await fetch("https://scholars-bk1o.onrender.com/api/students/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -330,8 +330,8 @@ export default function AddStudentDialog({ open, handleClose, refreshDashboard }
 
       {/* Normal Add Student Dialog */}
       {open && (
-        <div style={overlay} onClick={(e) => e.target === e.currentTarget && handleClose()}>
-          <div style={dialog}>
+        <div style={overlay} className="modal-overlay" onClick={(e) => e.target === e.currentTarget && handleClose()}>
+          <div style={dialog} className="student-dialog">
             <div style={header}>
               <div>
                 <h2 style={titleStyle}>Add Student</h2>
@@ -340,7 +340,7 @@ export default function AddStudentDialog({ open, handleClose, refreshDashboard }
               <button style={closeBtn} onClick={handleClose}>x</button>
             </div>
 
-            <div style={body} className="scholar-scroll">
+            <div style={body} className="scholar-scroll dialog-body">
               <div style={fieldGroup}>
                 <label style={labelStyle}>Full Name</label>
                 <input
@@ -355,7 +355,7 @@ export default function AddStudentDialog({ open, handleClose, refreshDashboard }
                 {errors.name && <span style={errorText}>{errors.name}</span>}
               </div>
 
-              <div style={fieldRow}>
+              <div style={fieldRow} className="dialog-field-row">
                 <div style={fieldGroup}>
                   <label style={labelStyle}>Mobile</label>
                   <input
@@ -386,7 +386,7 @@ export default function AddStudentDialog({ open, handleClose, refreshDashboard }
                 </div>
               </div>
 
-              <div style={fieldRow}>
+              <div style={fieldRow} className="dialog-field-row">
                 <div style={fieldGroup}>
                   <label style={labelStyle}>Fees (Rs.)</label>
                   <input
@@ -433,7 +433,7 @@ export default function AddStudentDialog({ open, handleClose, refreshDashboard }
 
               <div style={fieldGroup}>
                 <label style={labelStyle}>Batch Timing</label>
-                <div style={fieldRow}>
+                <div style={fieldRow} className="dialog-field-row">
                   <select
                     style={getInputStyle('startTime')}
                     name="startTime"
@@ -467,7 +467,7 @@ export default function AddStudentDialog({ open, handleClose, refreshDashboard }
               </div>
             </div>
 
-            <div style={footer}>
+            <div style={footer} className="dialog-footer">
               <button style={cancelBtn} onClick={handleClose}>Cancel</button>
               <button
                 style={{ ...submitBtn, opacity: loading ? 0.65 : 1 }}

@@ -210,7 +210,7 @@ export default function BasicTable() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "http://localhost:5000/api/students/",
+        "https://scholars-bk1o.onrender.com/api/students/",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -274,8 +274,8 @@ export default function BasicTable() {
         .sch-tr:hover { background: #fafafa; }
       `}</style>
 
-      <div style={styles.page}>
-        <div style={styles.pageHeader}>
+      <div style={styles.page} className="app-page students-page">
+        <div style={styles.pageHeader} className="page-header">
           <h1 style={styles.pageTitle}>
             Students
             <span style={styles.countBadge}>{filteredRows.length}</span>
@@ -284,7 +284,7 @@ export default function BasicTable() {
         </div>
 
         {/* Filters */}
-        <div style={styles.filterRow}>
+        <div style={styles.filterRow} className="filter-row">
           <div style={styles.filterWrap}>
             <span style={styles.filterIcon}>⌕</span>
             <input
@@ -324,8 +324,8 @@ export default function BasicTable() {
         </div>
 
         {/* Table */}
-        <div style={styles.tableWrap}>
-          <table style={styles.table}>
+        <div style={styles.tableWrap} className="responsive-table-wrap">
+          <table style={styles.table} className="responsive-table students-table">
             <thead style={styles.thead}>
               <tr>
                 <th style={styles.th}>Student</th>

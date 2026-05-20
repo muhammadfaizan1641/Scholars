@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+const API_BASE = "https://scholars-bk1o.onrender.com/api";
+
 const styles = {
   page: {
     fontFamily: "'DM Sans', sans-serif",
@@ -197,7 +199,6 @@ export default function Login() {
   const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [inputFocus, setInputFocus] = useState(null);
 
   const handleLogin = async () => {
     setError("");
@@ -205,7 +206,7 @@ export default function Login() {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch(`${API_BASE}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -214,8 +215,7 @@ export default function Login() {
 
       if (!res.ok) {
         if (data.code === "EMAIL_NOT_VERIFIED") {
-          const params = new URLSearchParams({ email: data.email || email });
-          navigate(`/verify-email?${params.toString()}`);
+          await openOtpVerification(data.email || email);
           return;
         }
 
@@ -232,6 +232,22 @@ export default function Login() {
     }
   };
 
+  const openOtpVerification = async (targetEmail) => {
+    try {
+      const res = await fetch(`${API_BASE}/auth/resend-verification`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: targetEmail }),
+      });
+      const data = await res.json();
+      const params = new URLSearchParams({ email: targetEmail });
+      navigate(`/verify-email?${params.toString()}`);
+    } catch {
+      const params = new URLSearchParams({ email: targetEmail });
+      navigate(`/verify-email?${params.toString()}`);
+    }
+  };
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter") handleLogin();
   };
@@ -244,8 +260,8 @@ export default function Login() {
         input:focus { border-color: #0f0f0f !important; background: #fff !important; }
       `}</style>
 
-      <div style={styles.page}>
-        <div style={styles.card}>
+      <div style={styles.page} className="auth-page">
+        <div style={styles.card} className="auth-card">
 
           {/* Logo */}
           <div style={styles.logoRow}>

@@ -296,7 +296,7 @@ export default function StudentDetailsPage() {
     const token = localStorage.getItem("token");
 
     const res = await fetch(
-      `http://localhost:5000/api/students/details/${id}`,
+      `https://scholars-bk1o.onrender.com/api/students/details/${id}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -326,7 +326,7 @@ export default function StudentDetailsPage() {
   const token = localStorage.getItem("token");
 
   const res = await fetch(
-    `http://localhost:5000/api/students/collect-fees/${id}`,
+    `https://scholars-bk1o.onrender.com/api/students/collect-fees/${id}`,
     {
       method: "POST",
       headers: {
@@ -345,7 +345,7 @@ const updateStudent = async () => {
   const token = localStorage.getItem("token");
 
   const res = await fetch(
-    `http://localhost:5000/api/students/update/${id}`,
+    `https://scholars-bk1o.onrender.com/api/students/update/${id}`,
     {
       method: "PUT",
       headers: {
@@ -376,7 +376,7 @@ const deleteStudent = async () => {
   const token = localStorage.getItem("token");
 
   const res = await fetch(
-    `http://localhost:5000/api/students/delete/${id}`,
+    `https://scholars-bk1o.onrender.com/api/students/delete/${id}`,
     {
       method: "DELETE",
       headers: {
@@ -414,13 +414,13 @@ const deleteStudent = async () => {
         />
       )}
 
-      <div style={S.page}>
+      <div style={S.page} className="app-page student-details-page">
         <button style={S.backBtn} onClick={() => navigate(-1)}>← Back</button>
 
         {/* Profile card */}
-        <div style={S.profileCard}>
-          <div style={S.profileTop}>
-            <div style={S.profileLeft}>
+        <div style={S.profileCard} className="profile-card">
+          <div style={S.profileTop} className="profile-top">
+            <div style={S.profileLeft} className="profile-left">
               <div style={S.avatar}>{getInitials(student.name)}</div>
               <div>
                 <h1 style={S.studentName}>{student.name}</h1>
@@ -429,7 +429,7 @@ const deleteStudent = async () => {
             </div>
           </div>
 
-          <div style={S.infoGrid}>
+          <div style={S.infoGrid} className="info-grid">
             {/* Teacher */}
             <div style={S.infoItem}>
               <span style={S.infoLabel}>Teacher</span>
@@ -450,7 +450,7 @@ const deleteStudent = async () => {
             <div style={S.infoItem}>
               <span style={S.infoLabel}>Batch Timing</span>
               {editMode ? (
-                <div style={S.editRow}>
+                <div style={S.editRow} className="edit-row">
                   <input style={S.editInput} type="time" value={startTime} onChange={e => setStartTime(e.target.value)} />
                   <input style={S.editInput} type="time" value={endTime} onChange={e => setEndTime(e.target.value)} />
                 </div>
@@ -483,7 +483,7 @@ const deleteStudent = async () => {
           <hr style={S.divider} />
 
           {/* Action buttons */}
-          <div style={S.actionRow}>
+          <div style={S.actionRow} className="detail-actions">
             <button style={S.btnGreen} onClick={collectFees}>Collect Fees</button>
 
             {!editMode && (
@@ -502,14 +502,14 @@ const deleteStudent = async () => {
         </div>
 
         {/* Fees history */}
-        <div style={S.tableCard}>
+        <div style={S.tableCard} className="responsive-table-wrap detail-table-card">
           <div style={S.tableHeader}>
             <p style={S.tableTitle}>Fees History</p>
             <span style={{ fontSize: '12px', color: '#bbb', fontFamily: "'DM Mono', monospace" }}>
               {student.feesHistory?.filter(f => f.paid).length || 0} / {student.feesHistory?.length || 0} paid
             </span>
           </div>
-          <table style={S.table}>
+          <table style={S.table} className="responsive-table detail-table">
             <thead>
               <tr>
                 <th style={S.th}>Month</th>

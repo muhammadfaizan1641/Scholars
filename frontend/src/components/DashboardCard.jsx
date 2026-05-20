@@ -275,7 +275,7 @@ function PlanStatusCard({ planInfo, totalStudents, onUpgrade }) {
       : `${totalStudents}/${freeLimit} free student slots used. Upgrade to Pro for unlimited students and reports.`;
 
   return (
-    <div style={{ ...styles.planCard, ...cardTone }}>
+    <div style={{ ...styles.planCard, ...cardTone }} className="dashboard-plan-card">
       <div>
         <div style={{ ...styles.planPill, ...pillTone }}>
           {isPro ? "PRO ACTIVE" : isExpired ? "RENEWAL DUE" : "FREE"}
@@ -317,14 +317,14 @@ export default function DashboardCard() {
 
   const downloadPDF = () => {
     const token = localStorage.getItem("token");
-    window.open(`http://localhost:5000/api/students/download-pdf?token=${token}`, "_blank");
+    window.open(`https://scholars-bk1o.onrender.com/api/students/download-pdf?token=${token}`, "_blank");
   };
 
   const fetchDashboard = async () => {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch("http://localhost:5000/api/students/dashboard", {
+      const response = await fetch("https://scholars-bk1o.onrender.com/api/students/dashboard", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -382,8 +382,11 @@ export default function DashboardCard() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap');
         @media (max-width: 720px) {
+          .dashboard-page { padding: 22px 14px !important; }
           .dashboard-stats, .dashboard-sections, .pro-tool-strip { grid-template-columns: 1fr !important; }
           .dashboard-actions { flex-direction: column; }
+          .dashboard-plan-card { align-items: stretch !important; }
+          .dashboard-plan-card button { width: 100%; }
         }
       `}</style>
 
@@ -392,6 +395,7 @@ export default function DashboardCard() {
           ...styles.page,
           maxWidth: isProDashboard ? "960px" : "840px",
         }}
+        className="dashboard-page app-page"
       >
         <div style={styles.pageHeader}>
           <div>
