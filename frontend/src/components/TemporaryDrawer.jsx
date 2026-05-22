@@ -29,8 +29,9 @@ const S = {
     position: 'fixed',
     top: 0,
     left: 0,
-    height: '100%',
-    width: '280px',
+    height: '100dvh',
+    maxHeight: '100dvh',
+    width: 'min(280px, 88vw)',
     background: '#0f0f0f',
     zIndex: 1300,
     display: 'flex',
@@ -81,6 +82,8 @@ const S = {
     display: 'flex',
     flexDirection: 'column',
     gap: '4px',
+    overflowY: 'auto',
+    minHeight: 0,
   },
   navLabel: {
     fontSize: '10px',
@@ -139,6 +142,9 @@ const S = {
     display: 'flex',
     flexDirection: 'column',
     gap: '12px',
+    flexShrink: 0,
+    background: '#0f0f0f',
+    paddingBottom: 'max(16px, env(safe-area-inset-bottom))',
   },
   footerText: {
     fontSize: '11px',
@@ -204,16 +210,13 @@ export default function TemporaryDrawer({ open, setOpen }) {
   const [logoutHovered, setLogoutHovered] = useState(false);
 
   const handleLogout = () => {
-    // Token delete karo from localStorage aur sessionStorage.
     localStorage.removeItem('token');
     localStorage.removeItem('authToken');
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('authToken');
 
-    // Drawer band karo
     setOpen(false);
 
-    // Login page par redirect karo
     navigate('/login');
   };
 
@@ -298,7 +301,6 @@ export default function TemporaryDrawer({ open, setOpen }) {
             <div style={S.logoutIcon}>🚪</div>
             <div>
               <p style={S.logoutText}>Logout</p>
-              {/* <p style={S.logoutDesc}>Session khatam karo</p> */}
             </div>
           </button>
 

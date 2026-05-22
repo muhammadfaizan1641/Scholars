@@ -222,7 +222,7 @@ export default function VerifyEmail() {
         setMessage(data.message || "Email verified successfully.");
       } catch (err) {
         setStatus("error");
-        setMessage(err.message || "Verification link invalid ya expire ho gaya hai.");
+        setMessage(err.message || "Verification link is invalid or has expired.");
       }
     };
 
@@ -267,7 +267,7 @@ export default function VerifyEmail() {
       setMessage(data.message || "Email verified successfully.");
     } catch (err) {
       setStatus("error");
-      setMessage(err.message || "OTP invalid ya expire ho gaya hai.");
+      setMessage(err.message || "OTP is invalid or has expired.");
     }
   };
 

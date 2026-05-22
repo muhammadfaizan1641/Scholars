@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const API_BASE = "https://scholars-b7nh.onrender.com/api";
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
 
 const styles = {
   page: {
@@ -229,8 +231,13 @@ export default function Signup() {
     setError("");
     setSuccess("");
 
-    if (!name || !email || !password) return setError("All fields are required.");
-    if (password.length < 6) return setError("Password must be at least 6 characters.");
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (!name.trim() || !cleanEmail || !password) return setError("All fields are required.");
+    if (!EMAIL_REGEX.test(cleanEmail)) return setError("Please enter a valid email address.");
+    if (!PASSWORD_REGEX.test(password)) {
+      return setError("Password must be at least 8 characters and include uppercase, lowercase, number, and special character.");
+    }
 
     setLoading(true);
     const controller = new AbortController();
@@ -240,16 +247,15 @@ export default function Signup() {
       const res = await fetch(`${API_BASE}/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name: name.trim(), email: cleanEmail, password }),
         signal: controller.signal,
       });
       const data = await res.json();
 
       if (!res.ok) return setError(data.message || "Signup failed.");
 
-      setSuccess(data.message || "Account created! Please verify your email.");
-      const params = new URLSearchParams({ email });
-      navigate(`/verify-email?${params.toString()}`);
+      setSuccess(data.message || "Account created! You can sign in now.");
+      navigate("/login");
     } catch (err) {
       setError(
         err.name === "AbortError"

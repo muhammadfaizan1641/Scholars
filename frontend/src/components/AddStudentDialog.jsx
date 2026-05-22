@@ -178,27 +178,27 @@ function validateStudent(student) {
   const teacherName = student.teacherName.trim();
   const { startTime, endTime } = student.batchTiming;
 
-  if (!name) errors.name = "Name required hai.";
+  if (!name) errors.name = "Name is required.";
   else if (name.length < 2) errors.name = "Name kam se kam 2 letters ka hona chahiye.";
-  else if (!/^[a-zA-Z\s.'-]+$/.test(name)) errors.name = "Name me sirf letters use karo.";
+  else if (!/^[a-zA-Z\s.'-]+$/.test(name)) errors.name = "Name can only contain letters.";
 
-  if (!mobile) errors.mobile = "Mobile number required hai.";
+  if (!mobile) errors.mobile = "Mobile number is required.";
   else if (!/^[6-9]\d{9}$/.test(mobile)) errors.mobile = "Valid 10 digit Indian mobile number daalo.";
 
-  if (!className) errors.class = "Class required hai.";
+  if (!className) errors.class = "Class is required.";
   else if (className.length > 20) errors.class = "Class value thodi short rakho.";
 
-  if (!student.fees) errors.fees = "Fees required hai.";
-  else if (!Number.isFinite(fees) || fees <= 0) errors.fees = "Fees 0 se zyada honi chahiye.";
+  if (!student.fees) errors.fees = "Fees are required.";
+  else if (!Number.isFinite(fees) || fees <= 0) errors.fees = "Fees must be greater than 0.";
 
-  if (!student.joiningDate) errors.joiningDate = "Joining date required hai.";
-  else if (new Date(student.joiningDate) > new Date()) errors.joiningDate = "Future joining date allowed nahi hai.";
+  if (!student.joiningDate) errors.joiningDate = "Joining date is required.";
+  else if (new Date(student.joiningDate) > new Date()) errors.joiningDate = "Future joining date is not allowed.";
 
-  if (!teacherName) errors.teacherName = "Teacher name required hai.";
-  else if (!/^[a-zA-Z\s.'-]+$/.test(teacherName)) errors.teacherName = "Teacher name me sirf letters use karo.";
+  if (!teacherName) errors.teacherName = "Teacher name is required.";
+  else if (!/^[a-zA-Z\s.'-]+$/.test(teacherName)) errors.teacherName = "Teacher name can only contain letters.";
 
-  if (!startTime) errors.startTime = "Start time select karo.";
-  if (!endTime) errors.endTime = "End time select karo.";
+  if (!startTime) errors.startTime = "Please select a start time.";
+  if (!endTime) errors.endTime = "Please select an end time.";
   if (startTime && endTime && startTime >= endTime) {
     errors.endTime = "End time start time ke baad hona chahiye.";
   }
@@ -230,7 +230,7 @@ export default function AddStudentDialog({ open, handleClose, refreshDashboard }
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length > 0) {
-      showToast("Please student details sahi se fill karo.", "error");
+      showToast("Please fill student details correctly.", "error");
       return;
     }
 
@@ -272,7 +272,7 @@ export default function AddStudentDialog({ open, handleClose, refreshDashboard }
 
       if (!response.ok) {
         if (data.errors) setErrors(data.errors);
-        showToast(data.message || "Student add nahi ho paya.", "error");
+        showToast(data.message || "Could not add student.", "error");
         return;
       }
 
@@ -284,7 +284,7 @@ export default function AddStudentDialog({ open, handleClose, refreshDashboard }
 
     } catch (error) {
       console.error(error);
-      showToast("Server se connect nahi ho paya.", "error");
+      showToast("Could not connect to the server.", "error");
     } finally {
       setLoading(false);
     }
@@ -322,7 +322,7 @@ export default function AddStudentDialog({ open, handleClose, refreshDashboard }
           onClose={() => setShowLimitPopup(false)}
           onUpgradeSuccess={() => {
             setShowLimitPopup(false);
-            showToast("Pro plan active ho gaya. Ab unlimited students add kar sakte ho.", "success");
+            showToast("Pro plan is active. You can now add unlimited students.", "success");
             refreshDashboard?.();
           }}
         />

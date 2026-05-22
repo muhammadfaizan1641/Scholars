@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const API_BASE = "https://scholars-b7nh.onrender.com/api";
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 const styles = {
   page: {
@@ -202,23 +203,21 @@ export default function Login() {
 
   const handleLogin = async () => {
     setError("");
-    if (!email || !password) return setError("Email and password are required.");
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (!cleanEmail || !password) return setError("Email and password are required.");
+    if (!EMAIL_REGEX.test(cleanEmail)) return setError("Please enter a valid email address.");
 
     setLoading(true);
     try {
       const res = await fetch(`${API_BASE}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: cleanEmail, password }),
       });
       const data = await res.json();
 
       if (!res.ok) {
-        if (data.code === "EMAIL_NOT_VERIFIED") {
-          await openOtpVerification(data.email || email);
-          return;
-        }
-
         return setError(data.message || "Invalid credentials.");
       }
 
@@ -229,22 +228,6 @@ export default function Login() {
       setError("Cannot connect to server. Is your backend running?");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const openOtpVerification = async (targetEmail) => {
-    try {
-      const res = await fetch(`${API_BASE}/auth/resend-verification`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: targetEmail }),
-      });
-      const data = await res.json();
-      const params = new URLSearchParams({ email: targetEmail });
-      navigate(`/verify-email?${params.toString()}`);
-    } catch {
-      const params = new URLSearchParams({ email: targetEmail });
-      navigate(`/verify-email?${params.toString()}`);
     }
   };
 
