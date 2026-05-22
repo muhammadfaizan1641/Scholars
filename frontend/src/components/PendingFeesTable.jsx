@@ -165,7 +165,7 @@ export default function PendingFeesTable() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "https://scholars-bk1o.onrender.com/api/students/pending",
+        "https://scholars-b7nh.onrender.com/api/students/pending",
         {
           headers: {
             Authorization: `Bearer ${token}`,

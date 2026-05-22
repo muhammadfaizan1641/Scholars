@@ -296,7 +296,7 @@ export default function StudentDetailsPage() {
     const token = localStorage.getItem("token");
 
     const res = await fetch(
-      `https://scholars-bk1o.onrender.com/api/students/details/${id}`,
+      `https://scholars-b7nh.onrender.com/api/students/details/${id}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -326,7 +326,7 @@ export default function StudentDetailsPage() {
   const token = localStorage.getItem("token");
 
   const res = await fetch(
-    `https://scholars-bk1o.onrender.com/api/students/collect-fees/${id}`,
+    `https://scholars-b7nh.onrender.com/api/students/collect-fees/${id}`,
     {
       method: "POST",
       headers: {
@@ -345,7 +345,7 @@ const updateStudent = async () => {
   const token = localStorage.getItem("token");
 
   const res = await fetch(
-    `https://scholars-bk1o.onrender.com/api/students/update/${id}`,
+    `https://scholars-b7nh.onrender.com/api/students/update/${id}`,
     {
       method: "PUT",
       headers: {
@@ -376,7 +376,7 @@ const deleteStudent = async () => {
   const token = localStorage.getItem("token");
 
   const res = await fetch(
-    `https://scholars-bk1o.onrender.com/api/students/delete/${id}`,
+    `https://scholars-b7nh.onrender.com/api/students/delete/${id}`,
     {
       method: "DELETE",
       headers: {

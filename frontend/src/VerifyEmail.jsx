@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 
-const API_BASE = "https://scholars-bk1o.onrender.com/api";
+const API_BASE = "https://scholars-b7nh.onrender.com/api";
 
 const styles = {
   page: {

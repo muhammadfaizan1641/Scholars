@@ -317,14 +317,14 @@ export default function DashboardCard() {
 
   const downloadPDF = () => {
     const token = localStorage.getItem("token");
-    window.open(`https://scholars-bk1o.onrender.com/api/students/download-pdf?token=${token}`, "_blank");
+    window.open(`https://scholars-b7nh.onrender.com/api/students/download-pdf?token=${token}`, "_blank");
   };
 
   const fetchDashboard = async () => {
     try {
       const token = localStorage.getItem("token");
 
-      const response = await fetch("https://scholars-bk1o.onrender.com/api/students/dashboard", {
+      const response = await fetch("https://scholars-b7nh.onrender.com/api/students/dashboard", {
         headers: {
           Authorization: `Bearer ${token}`,
         },

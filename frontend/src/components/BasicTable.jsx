@@ -210,7 +210,7 @@ export default function BasicTable() {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        "https://scholars-bk1o.onrender.com/api/students/",
+        "https://scholars-b7nh.onrender.com/api/students/",
         {
           headers: {
             Authorization: `Bearer ${token}`,

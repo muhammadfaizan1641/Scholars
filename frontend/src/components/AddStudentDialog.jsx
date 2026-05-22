@@ -252,7 +252,7 @@ export default function AddStudentDialog({ open, handleClose, refreshDashboard }
         },
       };
 
-      const response = await fetch("https://scholars-bk1o.onrender.com/api/students/add", {
+      const response = await fetch("https://scholars-b7nh.onrender.com/api/students/add", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -3,7 +3,7 @@ import { useToast } from "./components/ToastProvider";
 
 const RAZORPAY_KEY_ID = "rzp_test_SqOwNrPgKGEEo5";
 const PRO_PRICE_INR = 29900;
-const API_BASE = "https://scholars-bk1o.onrender.com/api";
+const API_BASE = "https://scholars-b7nh.onrender.com/api";
 
 function loadRazorpayScript() {
   return new Promise((resolve) => {

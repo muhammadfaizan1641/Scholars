@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const API_BASE = "https://scholars-bk1o.onrender.com/api";
+const API_BASE = "https://scholars-b7nh.onrender.com/api";
 
 const styles = {
   page: {
@@ -249,7 +249,6 @@ export default function Signup() {
 
       setSuccess(data.message || "Account created! Please verify your email.");
       const params = new URLSearchParams({ email });
-      if (data.verificationUrl) params.set("verificationUrl", data.verificationUrl);
       navigate(`/verify-email?${params.toString()}`);
     } catch (err) {
       setError(
