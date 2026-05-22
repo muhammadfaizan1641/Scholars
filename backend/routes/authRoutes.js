@@ -104,15 +104,13 @@ router.post("/signup", async (req, res) => {
 
     });
 
-    const { verificationUrl, otp, emailResult } = await sendUserVerification(user);
+    const { emailResult } = await sendUserVerification(user);
 
     res.json({
       message: emailResult.sent
         ? "Account created. Please verify your email with the OTP."
-        : "Account created. SMTP is not configured, use the OTP or verification link.",
+        : "Account created, but verification email could not be sent. Please try Resend OTP.",
       verificationRequired: true,
-      verificationUrl: emailResult.sent ? undefined : verificationUrl,
-      verificationOtp: emailResult.sent ? undefined : otp,
       user: {
         id: user._id,
         name: user.name,
@@ -246,14 +244,12 @@ router.post("/resend-verification", async (req, res) => {
       });
     }
 
-    const { verificationUrl, otp, emailResult } = await sendUserVerification(user);
+    const { emailResult } = await sendUserVerification(user);
 
     res.json({
       message: emailResult.sent
         ? "Verification OTP sent."
-        : "SMTP is not configured, use the OTP or verification link.",
-      verificationUrl: emailResult.sent ? undefined : verificationUrl,
-      verificationOtp: emailResult.sent ? undefined : otp
+        : "Verification email could not be sent. Please check SMTP settings and try again."
     });
 
   } catch (error) {
