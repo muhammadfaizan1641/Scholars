@@ -66,6 +66,7 @@ async function sendUserVerification(user) {
     );
   } catch (error) {
     emailResult = { sent: false, reason: error.message || "EMAIL_SEND_FAILED" };
+    console.error("Verification email failed:", emailResult.reason);
   }
 
   return { verificationUrl, otp, emailResult };
