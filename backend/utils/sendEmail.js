@@ -1,8 +1,26 @@
 export async function sendVerificationEmail({ to, name, verificationUrl, otp }) {
+  const cleanEnv = (value) => {
+    if (!value) return "";
+    const trimmed = value.trim();
+    const first = trimmed[0];
+    const last = trimmed[trimmed.length - 1];
+
+    if ((first === "'" && last === "'") || (first === '"' && last === '"')) {
+      return trimmed.slice(1, -1);
+    }
+
+    return trimmed;
+  };
+
+  const smtpHost = cleanEnv(process.env.SMTP_HOST);
+  const smtpUser = cleanEnv(process.env.SMTP_USER);
+  const smtpPass = cleanEnv(process.env.SMTP_PASS).replace(/\s+/g, "");
+  const smtpFrom = cleanEnv(process.env.SMTP_FROM);
+
   const hasSmtpConfig =
-    process.env.SMTP_HOST &&
-    process.env.SMTP_USER &&
-    process.env.SMTP_PASS;
+    smtpHost &&
+    smtpUser &&
+    smtpPass;
 
   if (!hasSmtpConfig) {
     return { sent: false, reason: "SMTP_NOT_CONFIGURED" };
@@ -10,17 +28,17 @@ export async function sendVerificationEmail({ to, name, verificationUrl, otp }) 
 
   const nodemailer = await import("nodemailer");
   const transporter = nodemailer.default.createTransport({
-    host: process.env.SMTP_HOST,
+    host: smtpHost,
     port: Number(process.env.SMTP_PORT || 587),
     secure: process.env.SMTP_SECURE === "true",
     auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
+      user: smtpUser,
+      pass: smtpPass,
     },
   });
 
   await transporter.sendMail({
-    from: process.env.SMTP_FROM || `"Scholars" <${process.env.SMTP_USER}>`,
+    from: smtpFrom || `"Scholars" <${smtpUser}>`,
     to,
     subject: "Verify your Scholars account",
     html: `

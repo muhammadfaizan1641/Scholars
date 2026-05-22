@@ -9,7 +9,7 @@ import User from "../models/User.js";
 import { sendVerificationEmail } from "../utils/sendEmail.js";
 
 const VERIFICATION_EXPIRY_HOURS = 24;
-const EMAIL_SEND_TIMEOUT_MS = 8000;
+const EMAIL_SEND_TIMEOUT_MS = 30000;
 
 function getClientUrl() {
   return process.env.CLIENT_URL || "http://localhost:5173";
