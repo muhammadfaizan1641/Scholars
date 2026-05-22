@@ -10,6 +10,8 @@ import { sendVerificationEmail } from "../utils/sendEmail.js";
 
 const VERIFICATION_EXPIRY_HOURS = 24;
 const EMAIL_SEND_TIMEOUT_MS = 30000;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
 
 function getClientUrl() {
   return process.env.CLIENT_URL || "http://localhost:5173";
@@ -29,6 +31,14 @@ function createVerificationOtp() {
   const expires = new Date(Date.now() + VERIFICATION_EXPIRY_HOURS * 60 * 60 * 1000);
 
   return { otp, hashedOtp, expires };
+}
+
+function validateEmail(email) {
+  return EMAIL_REGEX.test(email);
+}
+
+function validatePassword(password) {
+  return PASSWORD_REGEX.test(password);
 }
 
 function withTimeout(promise, timeoutMs, timeoutMessage) {
@@ -82,6 +92,24 @@ router.post("/signup", async (req, res) => {
     } = req.body;
     const email = String(req.body.email || "").trim().toLowerCase();
 
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        message: "Name, email, and password are required."
+      });
+    }
+
+    if (!validateEmail(email)) {
+      return res.status(400).json({
+        message: "Please enter a valid email address."
+      });
+    }
+
+    if (!validatePassword(password)) {
+      return res.status(400).json({
+        message: "Password must be at least 8 characters and include uppercase, lowercase, number, and special character."
+      });
+    }
+
     const existingUser = await User.findOne({
       email
     });
@@ -101,18 +129,14 @@ router.post("/signup", async (req, res) => {
 
       name,
       email,
-      password: hashedPassword
+      password: hashedPassword,
+      isEmailVerified: true
 
     });
 
-    const { emailResult } = await sendUserVerification(user);
-
     res.json({
-      message: emailResult.sent
-        ? "Account created. Please verify your email with the OTP."
-        : "Account created, but verification email could not be sent. Please try Resend OTP.",
-      emailDebug: emailResult.sent ? undefined : emailResult.reason,
-      verificationRequired: true,
+      message: "Account created. You can sign in now.",
+      verificationRequired: false,
       user: {
         id: user._id,
         name: user.name,
@@ -147,7 +171,7 @@ router.get("/verify-email/:token", async (req, res) => {
 
     if (!user) {
       return res.status(400).json({
-        message: "Verification link invalid ya expire ho gaya hai"
+        message: "Verification link is invalid or has expired."
       });
     }
 
@@ -181,7 +205,7 @@ router.post("/verify-otp", async (req, res) => {
 
     if (!email || !/^\d{6}$/.test(otp)) {
       return res.status(400).json({
-        message: "Valid email aur 6 digit OTP required hai"
+        message: "A valid email and 6 digit OTP are required."
       });
     }
 
@@ -195,7 +219,7 @@ router.post("/verify-otp", async (req, res) => {
 
     if (!user) {
       return res.status(400).json({
-        message: "OTP invalid ya expire ho gaya hai"
+        message: "OTP is invalid or has expired."
       });
     }
 
@@ -228,7 +252,7 @@ router.post("/resend-verification", async (req, res) => {
 
     if (!email) {
       return res.status(400).json({
-        message: "Email required hai"
+        message: "Email is required."
       });
     }
 
@@ -236,13 +260,13 @@ router.post("/resend-verification", async (req, res) => {
 
     if (!user) {
       return res.status(404).json({
-        message: "Account nahi mila"
+        message: "Account not found."
       });
     }
 
     if (user.isEmailVerified) {
       return res.json({
-        message: "Email already verified hai"
+        message: "Email is already verified."
       });
     }
 
@@ -274,6 +298,18 @@ router.post("/login", async (req, res) => {
     } = req.body;
     const email = String(req.body.email || "").trim().toLowerCase();
 
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required."
+      });
+    }
+
+    if (!validateEmail(email)) {
+      return res.status(400).json({
+        message: "Please enter a valid email address."
+      });
+    }
+
     const user = await User.findOne({
       email
     });
@@ -295,16 +331,6 @@ router.post("/login", async (req, res) => {
 
       return res.status(400).json({
         message: "Invalid credentials"
-      });
-
-    }
-
-    if (!user.isEmailVerified) {
-
-      return res.status(403).json({
-        code: "EMAIL_NOT_VERIFIED",
-        message: "Please verify your email before signing in.",
-        email: user.email
       });
 
     }

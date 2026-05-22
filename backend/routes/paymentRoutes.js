@@ -38,7 +38,7 @@ router.post("/create-order", auth, async (req, res) => {
     res.json(order); // { id, amount, currency, receipt, status, ... }
   } catch (error) {
     console.error("Razorpay order error:", error);
-    res.status(500).json({ message: "Order create karna fail ho gaya" });
+    res.status(500).json({ message: "Could not create order." });
   }
 });
 
@@ -49,10 +49,10 @@ router.post("/verify", auth, async (req, res) => {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-      return res.status(400).json({ message: "Payment details incomplete hain" });
+      return res.status(400).json({ message: "Payment details are incomplete." });
     }
 
-    // Razorpay signature verify karo
+    // Verify the Razorpay signature.
     const body      = razorpay_order_id + "|" + razorpay_payment_id;
     const expected  = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
@@ -75,7 +75,7 @@ router.post("/verify", auth, async (req, res) => {
 
     res.json({
       success: true,
-      message: "Pro plan activate ho gaya!",
+      message: "Pro plan activated successfully.",
       planInfo: {
         plan: "pro",
         status: "active",

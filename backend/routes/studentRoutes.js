@@ -64,27 +64,27 @@ function validateStudentPayload(body) {
   const endTime = String(body.batchTiming?.endTime || "").trim();
   const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/;
 
-  if (!name) errors.name = "Name required hai.";
+  if (!name) errors.name = "Name is required.";
   else if (name.length < 2) errors.name = "Name kam se kam 2 letters ka hona chahiye.";
-  else if (!/^[a-zA-Z\s.'-]+$/.test(name)) errors.name = "Name me sirf letters use karo.";
+  else if (!/^[a-zA-Z\s.'-]+$/.test(name)) errors.name = "Name can only contain letters.";
 
-  if (!mobile) errors.mobile = "Mobile number required hai.";
+  if (!mobile) errors.mobile = "Mobile number is required.";
   else if (!/^[6-9]\d{9}$/.test(mobile)) errors.mobile = "Valid 10 digit Indian mobile number daalo.";
 
-  if (!className) errors.class = "Class required hai.";
+  if (!className) errors.class = "Class is required.";
   else if (className.length > 20) errors.class = "Class value thodi short rakho.";
 
-  if (!Number.isFinite(fees) || fees <= 0) errors.fees = "Fees 0 se zyada honi chahiye.";
+  if (!Number.isFinite(fees) || fees <= 0) errors.fees = "Fees must be greater than 0.";
 
-  if (!joiningDate) errors.joiningDate = "Joining date required hai.";
+  if (!joiningDate) errors.joiningDate = "Joining date is required.";
   else if (Number.isNaN(new Date(joiningDate).getTime())) errors.joiningDate = "Valid joining date daalo.";
-  else if (new Date(joiningDate) > new Date()) errors.joiningDate = "Future joining date allowed nahi hai.";
+  else if (new Date(joiningDate) > new Date()) errors.joiningDate = "Future joining date is not allowed.";
 
-  if (!teacherName) errors.teacherName = "Teacher name required hai.";
-  else if (!/^[a-zA-Z\s.'-]+$/.test(teacherName)) errors.teacherName = "Teacher name me sirf letters use karo.";
+  if (!teacherName) errors.teacherName = "Teacher name is required.";
+  else if (!/^[a-zA-Z\s.'-]+$/.test(teacherName)) errors.teacherName = "Teacher name can only contain letters.";
 
-  if (!timePattern.test(startTime)) errors.startTime = "Start time select karo.";
-  if (!timePattern.test(endTime)) errors.endTime = "End time select karo.";
+  if (!timePattern.test(startTime)) errors.startTime = "Please select a start time.";
+  if (!timePattern.test(endTime)) errors.endTime = "Please select an end time.";
   if (!errors.startTime && !errors.endTime && startTime >= endTime) {
     errors.endTime = "End time start time ke baad hona chahiye.";
   }
@@ -114,7 +114,7 @@ router.post("/add", auth, async (req, res) => {
 
     if (Object.keys(errors).length > 0) {
       return res.status(400).json({
-        message: "Please student details sahi se fill karo.",
+        message: "Please fill student details correctly.",
         errors,
       });
     }
