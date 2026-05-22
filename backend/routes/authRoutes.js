@@ -111,6 +111,7 @@ router.post("/signup", async (req, res) => {
       message: emailResult.sent
         ? "Account created. Please verify your email with the OTP."
         : "Account created, but verification email could not be sent. Please try Resend OTP.",
+      emailDebug: process.env.EMAIL_DEBUG === "true" ? emailResult.reason : undefined,
       verificationRequired: true,
       user: {
         id: user._id,
@@ -250,7 +251,8 @@ router.post("/resend-verification", async (req, res) => {
     res.json({
       message: emailResult.sent
         ? "Verification OTP sent."
-        : "Verification email could not be sent. Please check SMTP settings and try again."
+        : "Verification email could not be sent. Please check SMTP settings and try again.",
+      emailDebug: process.env.EMAIL_DEBUG === "true" ? emailResult.reason : undefined
     });
 
   } catch (error) {

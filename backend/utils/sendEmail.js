@@ -31,6 +31,9 @@ export async function sendVerificationEmail({ to, name, verificationUrl, otp }) 
     host: smtpHost,
     port: Number(process.env.SMTP_PORT || 587),
     secure: process.env.SMTP_SECURE === "true",
+    connectionTimeout: 30000,
+    greetingTimeout: 30000,
+    socketTimeout: 30000,
     auth: {
       user: smtpUser,
       pass: smtpPass,
