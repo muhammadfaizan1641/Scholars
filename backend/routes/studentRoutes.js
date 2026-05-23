@@ -6,7 +6,7 @@ import auth from "../middleware/auth.js";
 import Student from "../models/Student.js";
 import User from "../models/User.js";
 
-const FREE_STUDENT_LIMIT = 2;
+const FREE_STUDENT_LIMIT = 75;
 const PLAN_DURATION_DAYS = 30;
 
 function addDays(date, days) {
