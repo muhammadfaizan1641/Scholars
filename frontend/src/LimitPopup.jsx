@@ -341,7 +341,7 @@ export default function LimitPopup({
               </>
             ) : (
               <>
-                You've used all <strong>2 students</strong> on your free plan. Upgrade to Pro for unlimited students and advanced tools.
+                You've used all <strong>75 students</strong> on your free plan. Upgrade to Pro for unlimited students and advanced tools.
               </>
             )}
           </p>

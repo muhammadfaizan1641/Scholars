@@ -295,7 +295,7 @@ export default function Signup() {
           {/* Status pill */}
           <div style={styles.freePill}>
             <span style={styles.dot} />
-            Free Plan - 2 Students
+            Free Plan - 75 Students
           </div>
 
           <h1 style={styles.heading}>Create account</h1>
@@ -303,7 +303,7 @@ export default function Signup() {
 
           {/* Plan note */}
           <div style={styles.planNote}>
-            Free plan includes up to 2 students. Upgrade to Pro for unlimited access.
+            Free plan includes up to 75 students. Upgrade to Pro for unlimited access.
           </div>
 
           {/* Error / Success */}
